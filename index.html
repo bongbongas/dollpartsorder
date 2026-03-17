@@ -397,11 +397,11 @@
 
         // Store Logic
         const INITIAL_PARTS = [
-            { id: 1, machine: "공용", name: "[기계부속] 중형 집게발 고무", category: "Mechanical", price: 5000, stock: 100, desc: "전 기종 사용가능한 고탄성 고무", img: "https://via.placeholder.com/150/4f46e5/ffffff?text=Claw+Rubber" },
-            { id: 2, machine: "공용", name: "[기계부속] LED 전원부", category: "Mechanical", price: 45000, stock: 20, desc: "안정적인 DC 전원 공급 장치", img: "https://via.placeholder.com/150/4f46e5/ffffff?text=Power+Unit" },
-            { id: 3, machine: "공용", name: "[카드리더기] TCP-42", category: "Payment", price: 120000, stock: 5, desc: "다양한 결제 수단 지원 리더기", img: "https://via.placeholder.com/150/10b981/ffffff?text=Card+Reader" },
-            { id: 4, machine: "보너스팡", name: "봉봉 발매트 (Blue)", category: "Accessories", price: 15000, stock: 50, desc: "인형뽑기 앞 분위기를 살려주는 매트", img: "https://via.placeholder.com/150/f59e0b/ffffff?text=Mat" },
-            { id: 5, machine: "공용", name: "[소모품] 포장 봉투 (Size L)", category: "Consumables", price: 8000, stock: 200, desc: "대형 인형 주문용 튼튼한 봉투", img: "https://via.placeholder.com/150/94a3b8/ffffff?text=Bag" }
+            { id: 1, machine: "공용", name: "[기계부속] 중형 고무링 대", category: "Mechanical", price: 5000, stock: 100, desc: "전 기종 사용가능한 고탄성 고무", img: "img/고무링 대.png" },
+            { id: 2, machine: "공용", name: "[기계부속] LED 전원부", category: "Mechanical", price: 45000, stock: 20, desc: "안정적인 DC 전원 공급 장치", img: "img/LED 전원부.png" },
+            { id: 3, machine: "공용", name: "[카드리더기] TCP-42", category: "Payment", price: 120000, stock: 5, desc: "다양한 결제 수단 지원 리더기", img: "img/42 card.png" },
+            { id: 4, machine: "보너스팡", name: "소형 기판", category: "Accessories", price: 15000, stock: 50, desc: "인형뽑기 기본 기판", img: "img/소형 기판.png" },
+            { id: 5, machine: "공용", name: "[소모품] 조이스틱 소", category: "Consumables", price: 8000, stock: 200, desc: "조이스틱", img: "img/조이스틱 소.png" }
         ];
 
         // IndexedDB Wrapper for Large Storage
@@ -580,10 +580,11 @@
                 }
 
                 const parts = await store.getParts();
-                if (parts.length === 5) { // Initial data only
-                    for (const p of INITIAL_PARTS) {
-                        const existing = await db.get('parts', p.id);
-                        if (!existing) await db.put('parts', p);
+                // Init or force update previous placeholders
+                for (const p of INITIAL_PARTS) {
+                    const existing = await db.get('parts', p.id);
+                    if (!existing || (existing.img && existing.img.includes('via.placeholder.com'))) {
+                        await db.put('parts', { ...p, stock: existing ? existing.stock : p.stock });
                     }
                 }
             }
@@ -751,8 +752,11 @@
         }
 
         async function applyFilters() {
-            const machineFilter = document.getElementById('filter-machine').value;
-            const categoryFilter = document.getElementById('filter-category').value;
+            const machineEl = document.getElementById('filter-machine');
+            const categoryEl = document.getElementById('filter-category');
+            if (!machineEl || !categoryEl) return;
+            const machineFilter = machineEl.value;
+            const categoryFilter = categoryEl.value;
 
             let filteredParts = await store.getParts();
 
