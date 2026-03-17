@@ -524,6 +524,36 @@
                     return false;
                 }
             },
+            syncPartsFromSheet: async () => {
+                const url = await store.getSheetsUrl();
+                if (!url) return false;
+                try {
+                    const res = await fetch(`${url}?action=getParts`);
+                    if (res.ok) {
+                        const sheetsParts = await res.json();
+                        if (sheetsParts && Array.isArray(sheetsParts) && sheetsParts.length > 0) {
+                            for (const sp of sheetsParts) {
+                                // Expected format from Sheets: id, machine, name, category, price, img, desc
+                                const p = {
+                                    id: parseInt(sp.id) || Date.now(),
+                                    machine: sp.machine || "공용",
+                                    name: sp.name || "이름없음",
+                                    category: sp.category || "",
+                                    price: parseInt(sp.price) || 0,
+                                    img: sp.img || "",
+                                    desc: sp.desc || ""
+                                };
+                                const existing = await db.get('parts', p.id);
+                                await db.put('parts', { ...p, stock: existing ? existing.stock : 0 });
+                            }
+                            return sheetsParts.length;
+                        }
+                    }
+                } catch(e) {
+                    console.error('Sheet Parts Sync Error:', e);
+                }
+                return false;
+            },
             addPart: async (part) => {
                 const newPart = { ...part, id: Date.now() };
                 await db.put('parts', newPart);
@@ -606,6 +636,9 @@
                         await db.put('parts', { ...p, stock: existing ? existing.stock : p.stock });
                     }
                 }
+                
+                // Try silently fetching from sheets on load
+                await store.syncPartsFromSheet();
             }
         };
 
@@ -1157,8 +1190,15 @@
                             <input id="sheets-url" value="${sheetsUrl}" placeholder="https://script.google.com/..." style="padding:0.8rem;margin-bottom:0.5rem">
                             <button class="btn btn-primary" style="width:100%" onclick="saveSheetsConfig()">연동 설정 저장</button>
                         </div>
-                        <div style="border-top:1px solid var(--border);padding-top:1rem">
-                            <button class="btn" style="width:100%;background:var(--glass)" onclick="syncAllOrders()">기존 주문 전체 동기화 시도</button>
+                        <div style="border-top:1px solid var(--border);padding-top:1rem;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+                            <button class="btn" style="background:var(--glass)" onclick="syncAllOrders()">주문 내역<br>구글 시트로 보내기</button>
+                            <button class="btn" style="background:var(--glass)" onclick="fetchPartsFromSheetsUI()">부품 정보<br>구글 시트에서 가져오기</button>
+                        </div>
+                        <div style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted);background:rgba(0,0,0,0.2);padding:0.5rem;border-radius:6px;">
+                            <strong>* 부품 가져오기 설정 방법:</strong><br>
+                            1. 구글 시트에 <code>부품목록</code> 탭을 만드세요.<br>
+                            2. 1행에 순서대로 헤더를 적으세요: <code>id</code>, <code>machine</code>, <code>name</code>, <code>category</code>, <code>price</code>, <code>img</code>, <code>desc</code><br>
+                            3. 구글 앱스 스크립트에 <code>doGet</code> 코드를 최신 웹 앱으로 재배포(액세스 권한: 모든 사용자)하세요.
                         </div>
                     </div>
 
@@ -1203,6 +1243,20 @@
                 }
                 alert(`전체 동기화 시도를 완료했습니다.\n(성공: ${successCount}건 / 전체: ${orders.length}건)\n\n※ 시트에 데이터가 보이지 않는다면 구글 앱 스크립트 배포 시 '액세스 권한: 모든 사용자(Anyone)' 설정을 확인해 주세요.`);
             }
+        }
+
+        async function fetchPartsFromSheetsUI() {
+            const btn = event.currentTarget;
+            btn.innerHTML = `<i data-lucide="loader" class="spin" style="width:16px"></i> 동기화 중...`;
+            lucide.createIcons();
+            const count = await store.syncPartsFromSheet();
+            if (count !== false) {
+                alert(`구글 시트에서 ${count}건의 부품 정보를 성공적으로 가져왔습니다.`);
+                await renderView('admin');
+            } else {
+                alert(`동기화 실패\n- 연동된 URL이 올바른지 확인해주세요.\n- 앱스 스크립트에 doGet 함수가 추가되고 최신 버전으로 배포되었는지 확인해주세요.\n- 시트 이름이 '부품목록'인지 확인해주세요.`);
+            }
+            btn.innerHTML = `부품 정보<br>구글 시트에서 가져오기`;
         }
 
         async function downloadBackup() {
