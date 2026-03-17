@@ -377,7 +377,7 @@
 <body>
     <div class="app-container">
         <nav>
-            <div class="logo">BONGBONG PARTS Order <span style="font-size:0.5em;color:var(--text-muted);vertical-align:middle;margin-left:5px">v1.2</span></div>
+            <div class="logo">BONGBONG PARTS Order <span style="font-size:0.5em;color:var(--text-muted);vertical-align:middle;margin-left:5px">v1.3</span></div>
             <div class="nav-links">
                 <a onclick="renderView('shop')" id="nav-shop" class="active">부품주문</a>
                 <a onclick="renderView('tracking')" id="nav-tracking">주문조회</a>
@@ -579,11 +579,30 @@
                     localStorage.removeItem('google_sheets_url');
                 }
 
-                const parts = await store.getParts();
-                // Init or force update previous placeholders
-                for (const p of INITIAL_PARTS) {
+                let currentParts = INITIAL_PARTS;
+                try {
+                    const res = await fetch('js/initial_data.json');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.parts) currentParts = data.parts;
+                        if (data && data.config) {
+                            const pwds = await store.getPasswords();
+                            if (pwds.length === 1 && pwds[0] === '1234' && data.config.passwords) {
+                                await store.savePasswords(data.config.passwords);
+                            }
+                            const sheetsUrl = await store.getSheetsUrl();
+                            if (!sheetsUrl && data.config.sheetsUrl) {
+                                await store.saveSheetsUrl(data.config.sheetsUrl);
+                            }
+                        }
+                    }
+                } catch(e) { console.log('No local initial_data.json found.'); }
+
+                const dbParts = await store.getParts();
+                // Init or force update previous placeholders or sync with initial_data
+                for (const p of currentParts) {
                     const existing = await db.get('parts', p.id);
-                    if (!existing || (existing.img && existing.img.includes('via.placeholder.com'))) {
+                    if (!existing || (currentParts !== INITIAL_PARTS) || (existing.img && existing.img.includes('via.placeholder.com'))) {
                         await db.put('parts', { ...p, stock: existing ? existing.stock : p.stock });
                     }
                 }
