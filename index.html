@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BONGBONG PARTS Order - 인형뽑기 부품 원스탑 시스템</title>
+    <style>
+        :root {
+            --bg-color: #0b0114;
+            --card-bg: rgba(23, 5, 40, 0.6);
+            --primary: #e91e63;
+            --primary-hover: #ff4081;
+            --secondary: #00e5ff;
+            --accent: #ffd600;
+            --text-main: #ffffff;
+            --text-muted: #b39ddb;
+            --border: rgba(233, 30, 99, 0.3);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(233, 30, 99, 0.2);
+            --shadow: 0 0 20px rgba(233, 30, 99, 0.2);
+            --neon-pink: 0 0 10px rgba(233, 30, 99, 0.5);
+            --neon-blue: 0 0 10px rgba(0, 229, 255, 0.5);
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .logo {
+                grid-column: 1;
+                margin: 0 auto;
+            }
+
+            .nav-links {
+                grid-column: 1;
+                justify-content: center;
+                font-size: 0.85rem;
+            }
+
+            .nav-right {
+                display: none;
+            }
+        }
+
+        .logo {
+            grid-column: 1;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            filter: drop-shadow(var(--neon-pink));
+        }
+
+        .nav-links {
+            grid-column: 2;
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-main);
+            text-shadow: var(--neon-blue);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--secondary);
+            box-shadow: var(--neon-blue);
+        }
+
+        .nav-right {
+            grid-column: 3;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            /* 4열 배치를 위해 기존 1200px에서 확장 */
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem !important;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(233, 30, 99, 0.25);
+            transform: translateY(-4px);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--neon-pink);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.6);
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        /* Light Card Styles */
+        .card.light {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #1a202c;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .card.light h1,
+        .card.light h2,
+        .card.light h3 {
+            color: #1a202c;
+        }
+
+        .card.light p {
+            color: #4a5568;
+        }
+
+        .card.light input,
+        .card.light textarea,
+        .card.light select {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #1a202c;
+        }
+
+        .card.light input::placeholder,
+        .card.light textarea::placeholder {
+            color: #a0aec0;
+        }
+
+        /* Shop Layout Classes */
+        .shop-layout {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .shop-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-sidebar {
+            width: 320px;
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        /* Mobile Cart Styling */
+        @media (max-width: 1100px) {
+            .shop-layout {
+                flex-direction: column;
+                padding-bottom: 220px;
+                /* Space for fixed cart */
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                background: #170528;
+                /* var(--card-bg) darkened for contrast */
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 24px 24px 0 0 !important;
+                z-index: 1000;
+                max-height: 40vh;
+                margin: 0 !important;
+                border-top: 2px solid var(--primary);
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+            }
+        }
+
+        /* Responsive Grid Adjustments */
+        @media (max-width: 1200px) {
+            #parts-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #parts-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #parts-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Image Zoom Styles */
+        .zoom-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: visible;
+            /* 확대 이미지가 보이도록 */
+            background: #f1f5f9;
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .zoom-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: zoom-in;
+            position: relative;
+            z-index: 1;
+        }
+
+        .zoom-img:hover {
+            transform: scale(2.5);
+            /* 2배 이상으로 시원하게 확대! */
+            z-index: 200;
+            /* 다른 카드 위로 올라오게 */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav>
+            <div class="logo">BONGBONG PARTS Order</div>
+            <div class="nav-links">
+                <a onclick="renderView('shop')" id="nav-shop" class="active">부품주문</a>
+                <a onclick="renderView('tracking')" id="nav-tracking">주문조회</a>
+                <a onclick="renderView('admin')" id="nav-admin">관리자</a>
+            </div>
+        </nav>
+        <main id="app-viewport"></main>
+    </div>
+
+    <script>
+        // Global Error Handler for debugging
+        window.onerror = function (msg, url, line, col, error) {
+            console.error("Global Error: " + msg + " at " + line + ":" + col);
+            alert("시스템 오류가 발생했습니다: " + msg + " (Line: " + line + ")");
+            return false;
+        };
+
+        // Store Logic
+        const INITIAL_PARTS = [
+            { id: 1, machine: "공용", name: "[기계부속] 중형 집게발 고무", category: "Mechanical", price: 5000, stock: 100, desc: "전 기종 사용가능한 고탄성 고무", img: "https://via.placeholder.com/150/4f46e5/ffffff?text=Claw+Rubber" },
+            { id: 2, machine: "공용", name: "[기계부속] LED 전원부", category: "Mechanical", price: 45000, stock: 20, desc: "안정적인 DC 전원 공급 장치", img: "https://via.placeholder.com/150/4f46e5/ffffff?text=Power+Unit" },
+            { id: 3, machine: "공용", name: "[카드리더기] TCP-42", category: "Payment", price: 120000, stock: 5, desc: "다양한 결제 수단 지원 리더기", img: "https://via.placeholder.com/150/10b981/ffffff?text=Card+Reader" },
+            { id: 4, machine: "보너스팡", name: "봉봉 발매트 (Blue)", category: "Accessories", price: 15000, stock: 50, desc: "인형뽑기 앞 분위기를 살려주는 매트", img: "https://via.placeholder.com/150/f59e0b/ffffff?text=Mat" },
+            { id: 5, machine: "공용", name: "[소모품] 포장 봉투 (Size L)", category: "Consumables", price: 8000, stock: 200, desc: "대형 인형 주문용 튼튼한 봉투", img: "https://via.placeholder.com/150/94a3b8/ffffff?text=Bag" }
+        ];
+
+        // IndexedDB Wrapper for Large Storage
+        const db = {
+            conn: null,
+            init: () => {
+                if (db.conn) return Promise.resolve(db.conn);
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('BongbongPartsDB', 2);
+                    request.onupgradeneeded = (e) => {
+                        const d = e.target.result;
+                        if (!d.objectStoreNames.contains('parts')) d.createObjectStore('parts', { keyPath: 'id' });
+                        if (!d.objectStoreNames.contains('orders')) d.createObjectStore('orders', { keyPath: 'id' });
+                        if (!d.objectStoreNames.contains('config')) d.createObjectStore('config', { keyPath: 'key' });
+                    };
+                    request.onsuccess = (e) => {
+                        db.conn = e.target.result;
+                        resolve(db.conn);
+                    };
+                    request.onerror = (e) => reject(e.target.error);
+                });
+            },
+            getAll: async (storeName) => {
+                const conn = await db.init();
+                return new Promise((resolve, reject) => {
+                    const tx = conn.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            get: async (storeName, key) => {
+                const conn = await db.init();
+                return new Promise((resolve, reject) => {
+                    const tx = conn.transaction(storeName, 'readonly');
+                    const req = tx.objectStore(storeName).get(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            put: async (storeName, value) => {
+                const conn = await db.init();
+                return new Promise((resolve, reject) => {
+                    const tx = conn.transaction(storeName, 'readwrite');
+                    const req = tx.objectStore(storeName).put(value);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            delete: async (storeName, key) => {
+                const conn = await db.init();
+                return new Promise((resolve, reject) => {
+                    const tx = conn.transaction(storeName, 'readwrite');
+                    const req = tx.objectStore(storeName).delete(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            clear: async (storeName) => {
+                const conn = await db.init();
+                return new Promise((resolve, reject) => {
+                    const tx = conn.transaction(storeName, 'readwrite');
+                    const req = tx.objectStore(storeName).clear();
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error);
+                });
+            }
+        };
+
+        const store = {
+            getParts: async () => {
+                const parts = await db.getAll('parts');
+                return parts.length > 0 ? parts : INITIAL_PARTS;
+            },
+            getOrders: async () => {
+                return await db.getAll('orders');
+            },
+            getPasswords: async () => {
+                const res = await db.get('config', 'admin_passwords');
+                return res ? res.value : ['admin123'];
+            },
+            savePasswords: async (pwds) => {
+                await db.put('config', { key: 'admin_passwords', value: pwds });
+            },
+            getSheetsUrl: async () => {
+                const res = await db.get('config', 'google_sheets_url');
+                return res ? res.value : 'https://script.google.com/macros/s/AKfycbzbhxsqyMZHG8G_eBx6ORzUxJM0ZMQfLLQGfqZAEFHShjekyR2ghIkE_ofSje6w5rlYJw/exec';
+            },
+            saveSheetsUrl: async (url) => {
+                await db.put('config', { key: 'google_sheets_url', value: url });
+            },
+            addOrder: async (order) => {
+                const orders = await store.getOrders();
+                const now = new Date();
+                const dateKey = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+                const todayOrdersCount = orders.filter(o => {
+                    const oDate = new Date(o.date);
+                    return `${oDate.getFullYear()}${String(oDate.getMonth() + 1).padStart(2, '0')}${String(oDate.getDate()).padStart(2, '0')}` === dateKey;
+                }).length;
+                const orderId = `#${dateKey}-${String(todayOrdersCount + 1).padStart(4, '0')}`;
+                const newOrder = { ...order, id: orderId, date: now.toISOString(), status: '신청' };
+                await db.put('orders', newOrder);
+                const url = await store.getSheetsUrl();
+                if (url) await store.syncToSheet(newOrder, url);
+                return newOrder;
+            },
+            syncToSheet: async (order, url) => {
+                try {
+                    // mode: 'no-cors' is essential for Google Apps Script POST requests from browser
+                    await fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify(order)
+                    });
+                    console.log('Sheet Sync Sent for Order:', order.id);
+                    return true;
+                } catch (err) {
+                    console.error('Sheet Sync Error:', err);
+                    return false;
+                }
+            },
+            addPart: async (part) => {
+                const newPart = { ...part, id: Date.now() };
+                await db.put('parts', newPart);
+            },
+            updatePart: async (id, updatedPart) => {
+                const part = await db.get('parts', parseInt(id));
+                if (part) await db.put('parts', { ...part, ...updatedPart });
+            },
+            deletePart: async (id) => {
+                await db.delete('parts', parseInt(id));
+            },
+            updateStatus: async (id, status, trackingNumber = null, shippingFee = 0) => {
+                const order = await db.get('orders', id);
+                if (order) {
+                    order.status = status;
+                    if (trackingNumber !== null) order.trackingNumber = trackingNumber;
+                    order.shippingFee = parseInt(shippingFee) || 0;
+                    // Recalculate total with shipping fee
+                    const itemsTotal = order.items.reduce((s, i) => s + i.price * i.qty, 0);
+                    order.total = itemsTotal + order.shippingFee;
+                    
+                    await db.put('orders', order);
+                    const url = await store.getSheetsUrl();
+                    if (url) await store.syncToSheet(order, url);
+                }
+            },
+            deleteOrder: async (id) => {
+                await db.delete('orders', id);
+            },
+            init: async () => {
+                await db.init();
+                // Migration from LocalStorage to IndexedDB
+                const lsParts = localStorage.getItem('parts');
+                if (lsParts) {
+                    const parts = JSON.parse(lsParts);
+                    for (const p of parts) await db.put('parts', p);
+                    localStorage.removeItem('parts');
+                }
+                const lsOrders = localStorage.getItem('orders');
+                if (lsOrders) {
+                    const orders = JSON.parse(lsOrders);
+                    for (const o of orders) await db.put('orders', o);
+                    localStorage.removeItem('orders');
+                }
+                const lsPwds = localStorage.getItem('admin_passwords');
+                if (lsPwds) {
+                    await db.put('config', { key: 'admin_passwords', value: JSON.parse(lsPwds) });
+                    localStorage.removeItem('admin_passwords');
+                }
+                const lsUrl = localStorage.getItem('google_sheets_url');
+                if (lsUrl) {
+                    await db.put('config', { key: 'google_sheets_url', value: lsUrl });
+                    localStorage.removeItem('google_sheets_url');
+                }
+
+                const parts = await store.getParts();
+                if (parts.length === 5) { // Initial data only
+                    for (const p of INITIAL_PARTS) {
+                        const existing = await db.get('parts', p.id);
+                        if (!existing) await db.put('parts', p);
+                    }
+                }
+            }
+        };
+
+        // UI Logic
+        let cart = [];
+        let isAdminAuthenticated = false;
+        const viewport = document.getElementById('app-viewport');
+
+        async function renderView(view) {
+            console.log('Rendering view:', view);
+            const viewport = document.getElementById('app-viewport');
+            if (!viewport) {
+                console.error('Viewport element (#app-viewport) not found!');
+                return;
+            }
+
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.id === `nav-${view}`));
+            viewport.innerHTML = `<div class="animate-fade" id="view-content"></div>`;
+            const container = document.getElementById('view-content');
+
+            try {
+                if (view === 'shop') await renderShop(container);
+                else if (view === 'consult') renderConsult(container);
+                else if (view === 'tracking') await renderTracking(container);
+                else if (view === 'admin') {
+                    if (isAdminAuthenticated) {
+                        await renderAdmin(container);
+                    } else {
+                        renderAdminLogin(container);
+                    }
+                }
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            } catch (err) {
+                console.error('Render error:', err);
+                container.innerHTML = `<div class="card" style="margin:2rem; border:1px solid #ef4444; color:#ef4444">
+                    <h3>화면 로딩 중 오류가 발생했습니다.</h3>
+                    <p>${err.message}</p>
+                    <button class="btn" onclick="location.reload()">새로고침</button>
+                </div>`;
+            }
+        }
+
+        function renderAdminLogin(container) {
+            container.innerHTML = `
+                <div class="card" style="max-width:400px;margin:10% auto;text-align:center">
+                    <i data-lucide="lock" style="width:48px;height:48px;color:var(--accent);margin-bottom:1rem"></i>
+                    <h2>관리자 인증</h2>
+                    <p style="color:var(--text-muted);margin-bottom:1.5rem">비밀번호를 입력해 주세요.</p>
+                    <form id="admin-login-form" onsubmit="event.preventDefault(); checkAdminAuth();">
+                        <input type="password" id="admin-pw" name="password" autocomplete="current-password" style="margin-bottom:1rem;text-align:center" placeholder="Password">
+                        <button type="submit" class="btn btn-primary" style="width:100%">인증하기</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        async function checkAdminAuth() {
+            const input = document.getElementById('admin-pw').value;
+            const pwds = await store.getPasswords();
+            if (pwds.includes(input)) {
+                isAdminAuthenticated = true;
+                await renderView('admin');
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await store.init();
+            await renderView('shop');
+        });
+        function renderConsult(container) {
+            container.innerHTML = `
+                <div style="max-width:800px;margin:2rem auto;text-align:center">
+                    <h1 style="margin-bottom:1rem">실시간 상담 안내</h1>
+                    <p style="color:var(--text-muted);margin-bottom:3rem">기계 고장 문의, 대량 주문 상담 등 무엇이든 물어보세요.</p>
+                    
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:2rem">
+                        <div class="card">
+                            <i data-lucide="message-square" style="width:48px;height:48px;color:var(--primary);margin-bottom:1rem"></i>
+                            <h3>카카오톡 상담</h3>
+                            <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem">@ClawParts_Help <br> 평일 09:00 - 18:00</p>
+                            <button class="btn btn-primary" style="width:100%">상담 시작하기</button>
+                        </div>
+                        <div class="card">
+                            <i data-lucide="phone" style="width:48px;height:48px;color:var(--secondary);margin-bottom:1rem"></i>
+                            <h3>긴급 전화</h3>
+                            <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem">010-1234-5678 <br> 24시간 장애 접수</p>
+                            <button class="btn" style="width:100%;border:1px solid var(--border)">전화 걸기</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function renderShop(container) {
+            const parts = await store.getParts();
+
+            // Collect unique machines and ensure "전체" is always first
+            const machineSet = new Set();
+            parts.forEach(p => {
+                const mStr = p.machine || "공용";
+                mStr.split(',').forEach(m => {
+                    const trimmed = m.trim();
+                    if (trimmed) machineSet.add(trimmed);
+                });
+            });
+            const machines = ["전체", ...Array.from(machineSet).sort((a, b) => a.localeCompare(b, 'ko'))];
+
+            const categorySet = new Set();
+            parts.forEach(p => { if (p.category) categorySet.add(p.category); });
+            const categories = ["전체", ...Array.from(categorySet).sort((a, b) => a.localeCompare(b, 'ko'))];
+
+            container.innerHTML = `
+                <div class="shop-layout">
+                    <div class="shop-main">
+                        <h1 style="margin-bottom:0.5rem">부품 목록</h1>
+                        <p style="color:var(--text-muted);margin-bottom:2rem">가나다 순으로 부품을 확인하거나, 필터를 통해 원하는 부품을 빠르게 찾으세요.</p>
+                        
+                        <div style="display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
+                            <div style="flex:1;min-width:200px">
+                                <label style="display:block;font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">기기 선택</label>
+                                <select id="filter-machine" onchange="applyFilters()" style="width:100%;background:var(--card-bg);color:white;border:1px solid var(--border);padding:0.8rem;border-radius:8px">
+                                    ${machines.map(m => `<option value="${m}">${m}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div style="flex:1;min-width:200px">
+                                <label style="display:block;font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">부품군 선택</label>
+                                <select id="filter-category" onchange="applyFilters()" style="width:100%;background:var(--card-bg);color:white;border:1px solid var(--border);padding:0.8rem;border-radius:8px">
+                                    ${categories.map(c => `<option value="${c}">${c}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="parts-grid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:1.5rem">
+                            <!-- Parts will be rendered here by applyFilters -->
+                        </div>
+                    </div>
+
+                    <div id="cart-container" class="card cart-sidebar">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+                            <i data-lucide="shopping-basket" style="color:var(--primary)"></i>
+                            <h3 style="margin:0">장바구니</h3>
+                        </div>
+                        <div id="cart-list" style="margin:1.5rem 0;font-size:0.9rem;display:flex;flex-direction:column;gap:0.8rem"></div>
+                        <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:auto">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+                                <span style="color:var(--text-muted)">총 주문 금액</span>
+                                <span id="cart-total" style="font-size:1.4rem;font-weight:800;color:var(--primary)">₩0</span>
+                            </div>
+                            <button class="btn btn-primary" style="width:100%;padding:1rem;font-size:1.1rem" onclick="renderCheckout()">
+                                <i data-lucide="check-circle"></i> 주문하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            await applyFilters();
+            updateCartUI();
+        }
+
+        async function applyFilters() {
+            const machineFilter = document.getElementById('filter-machine').value;
+            const categoryFilter = document.getElementById('filter-category').value;
+
+            let filteredParts = await store.getParts();
+
+            // 1. Alphabetical Sorting (Korean 가나다 -> English ABC)
+            filteredParts.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
+            // 2. Machine Filter (Support comma-separated multi-machines & include '공용')
+            if (machineFilter !== "전체") {
+                filteredParts = filteredParts.filter(p => {
+                    const mList = (p.machine || "공용").split(',').map(m => m.trim());
+                    return mList.includes(machineFilter) || mList.includes("공용");
+                });
+            }
+
+            // 3. Category Filter
+            if (categoryFilter !== "전체") {
+                filteredParts = filteredParts.filter(p => p.category === categoryFilter);
+            }
+
+            const grid = document.getElementById('parts-grid');
+            if (filteredParts.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--text-muted)">해당 조건에 맞는 부품이 없습니다.</div>`;
+            } else {
+                grid.innerHTML = filteredParts.map(p => `
+                    <div class="card light" style="display:flex; flex-direction:column; min-height:210px; padding: 1.2rem">
+                        <!-- <img src="${p.img || 'https://via.placeholder.com/150'}" style="width:100%;border-radius:8px;margin-bottom:1rem"> -->
+                        <div style="flex-grow:1">
+                            <h3 style="margin-bottom:0.3rem; font-size:1.05rem; line-height:1.3">${p.name}</h3>
+                            <div style="display:flex;justify-content:flex-start;align-items:center;margin-bottom:0.3rem">
+                                <div style="color:var(--primary);font-size:0.75rem;font-weight:700;background:var(--glass);padding:2px 8px;border-radius:4px">${p.machine || '공용'}</div>
+                            </div>
+                            <!-- <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem">${p.desc}</p> -->
+                        </div>
+                        
+                        <div style="display:flex; align-items:flex-end; gap:1rem; margin-top:auto; padding-top:0.5rem; border-top: 1px dashed rgba(0,0,0,0.05)">
+                            <!-- Thumbnail with Zoom Feature -->
+                            <div class="zoom-container">
+                                <img src="${p.img || 'https://via.placeholder.com/150'}" class="zoom-img" alt="${p.name}">
+                            </div>
+
+                            <div style="flex:1; display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem">
+                                <span style="font-weight:700; font-size:1.2rem; width:100%; text-align:right">₩${p.price.toLocaleString()}</span>
+                                <button class="btn btn-primary" style="padding:0.485rem 0.97rem; font-size:0.72rem; transform:scale(0.8); transform-origin:right; margin-right:-5%" onclick="addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                                    <i data-lucide="shopping-cart" style="width:14px; height:14px"></i> 담기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function addToCart(part) {
+            const item = cart.find(x => x.id === part.id);
+            if (item) item.qty++; else cart.push({ ...part, qty: 1 });
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const cartContainer = document.getElementById('cart-container');
+            cartContainer.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem">
+                    <h2 style="font-size:1.2rem;display:flex;align-items:center;gap:0.5rem">
+                        <i data-lucide="shopping-cart" style="width:20px"></i> 장바구니
+                    </h2>
+                    <span style="font-size:0.8rem;background:var(--primary);padding:0.2rem 0.6rem;border-radius:20px">${cart.length}</span>
+                </div>
+                <div style="flex:1;overflow-y:auto;margin-bottom:1.5rem">
+                    ${cart.map(item => `
+                        <div class="cart-item">
+                            <div style="flex:1">
+                                <div style="font-size:0.9rem;font-weight:700">${item.name}</div>
+                                <div style="font-size:0.8rem;color:var(--text-muted)">₩${item.price.toLocaleString()} × ${item.qty}</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.5rem">
+                                <div style="font-weight:800;font-size:0.9rem">₩${(item.price * item.qty).toLocaleString()}</div>
+                                <button class="btn" style="padding:0.2rem;background:none;color:#ef4444" onclick="removeFromCart(${item.id})">
+                                    <i data-lucide="minus-circle" style="width:16px"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                    ${cart.length === 0 ? '<p style="text-align:center;color:var(--text-muted);margin-top:2rem">장바구니가 비어있습니다.</p>' : ''}
+                </div>
+                <div style="border-top:1px solid var(--border);padding-top:1rem">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+                        <span style="font-weight:700">총 합계</span>
+                        <span style="font-size:1.4rem;font-weight:900;color:var(--secondary)">₩${total.toLocaleString()}</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="renderCheckout()" ${cart.length === 0 ? 'disabled' : ''} style="width:100%;padding:1rem;font-weight:800">
+                        주문하기 <i data-lucide="arrow-right" style="width:18px;margin-left:0.5rem"></i>
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function renderCheckout() {
+            if (!cart.length) return alert('장바구니가 비었습니다.');
+            viewport.innerHTML = `
+                <div class="card light animate-fade" style="max-width:600px;margin:2rem auto">
+                    <h2 style="margin-bottom:1.5rem">주문 정보 입력</h2>
+                    <div style="margin-bottom:1.2rem">
+                        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem">지점명</label>
+                        <input id="order-branch" placeholder="예: 강남역점">
+                    </div>
+                    <div style="margin-bottom:1.2rem">
+                        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem">담당자 이름</label>
+                        <input id="order-manager" placeholder="실명을 입력해주세요">
+                    </div>
+                    <div style="margin-bottom:1.2rem">
+                        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem">휴대전화번호</label>
+                        <input id="order-phone" placeholder="010-0000-0000">
+                    </div>
+                    <div style="margin-bottom:1.2rem">
+                        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem">배송지 주소</label>
+                        <input id="order-address" placeholder="정확한 주소를 입력해주세요">
+                    </div>
+                    <div style="margin-bottom:1.2rem">
+                        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem">기타사항</label>
+                        <textarea id="order-notes" rows="3" placeholder="요청사항을 적어주세요"></textarea>
+                    </div>
+                    <div style="margin-bottom:2rem">
+                        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem">비밀번호 (숫자 4자리)</label>
+                        <input id="order-password" type="password" maxlength="4" placeholder="조회용 비밀번호 4자리 입력">
+                    </div>
+                    
+                    <div style="background:var(--glass);padding:1rem;border-radius:8px;margin-bottom:2rem">
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem">최종 결제 금액</h3>
+                        <div style="font-size:1.5rem;font-weight:800;color:var(--primary)">₩${cart.reduce((s, i) => s + i.price * i.qty, 0).toLocaleString()}</div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width:100%;padding:1rem;font-size:1rem" onclick="submitOrder()">신청완료</button>
+                </div>
+            `;
+        }
+
+        async function submitOrder() {
+            const customer = document.getElementById('order-branch').value;
+            const manager = document.getElementById('order-manager').value;
+            const phone = document.getElementById('order-phone').value;
+            const address = document.getElementById('order-address').value;
+            const password = document.getElementById('order-password').value;
+            const notes = document.getElementById('order-notes').value;
+
+            if (!customer || !manager || !phone || !address || !password) return alert('모든 정보를 입력해 주세요.');
+            if (password.length !== 4) return alert('비밀번호는 숫자 4자리로 입력해 주세요.');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const order = { customer, branch: customer, manager, phone, address, notes, password, items: [...cart], total };
+
+            const result = await store.addOrder(order);
+            alert(`주문이 완료되었습니다!\n주문번호: ${result.id}`);
+            cart = [];
+            renderView('shop');
+        }
+
+        async function renderTracking(container) {
+            const orders = await store.getOrders();
+            container.innerHTML = `
+                <div style="max-width:800px;margin:0 auto">
+                    <h1 style="margin-bottom:2rem;text-align:center">주문 조회</h1>
+                    <div class="card" style="margin-bottom:2rem;padding:2rem">
+                        <div style="display:flex;flex-direction:column;gap:1.2rem">
+                            <div style="display:flex;flex-direction:column;gap:0.4rem">
+                                <label style="font-size:0.85rem;color:var(--text-muted)">휴대전화번호</label>
+                                <input id="track-id" placeholder="휴대폰 번호 또는 주문자명 입력" style="padding:1rem;background:var(--bg-color);border:1px solid var(--border);border-radius:8px">
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:0.4rem">
+                                <label style="font-size:0.85rem;color:var(--text-muted)">비밀번호</label>
+                                <input id="track-pw" type="password" maxlength="4" placeholder="주문 시 설정한 비밀번호 4자리" style="padding:1rem;background:var(--bg-color);border:1px solid var(--border);border-radius:8px" onkeydown="if(event.key === 'Enter') filterTracking()">
+                            </div>
+                            <button class="btn btn-primary" onclick="filterTracking()" style="padding:1rem;justify-content:center">조회하기</button>
+                        </div>
+                    </div>
+                    <div id="tracking-results"></div>
+                </div>
+            `;
+        }
+
+        async function filterTracking() {
+            const query = document.getElementById('track-id').value.trim();
+            const password = document.getElementById('track-pw').value.trim();
+            if (!query || !password) return alert('조회하실 정보와 비밀번호를 모두 입력해 주세요.');
+
+            const allOrders = await store.getOrders();
+            const filtered = allOrders.filter(o => (o.customer.includes(query) || o.phone.includes(query)) && o.password === password);
+            const results = document.getElementById('tracking-results');
+            results.innerHTML = renderOrderCards(filtered);
+            lucide.createIcons();
+        }
+
+        function renderOrderCards(orders) {
+            const getStatusColor = (status) => {
+                switch (status) {
+                    case '발송': return 'var(--accent)';
+                    case '완료': return 'var(--secondary)';
+                    case '준비중': return '#38bdf8';
+                    case '접수': return '#818cf8';
+                    default: return 'var(--text-muted)';
+                }
+            };
+
+            return orders.length ? orders.sort((a, b) => b.date.localeCompare(a.date)).map(o => `
+                <div class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <div style="font-size:0.8rem;color:var(--text-muted)">${o.id} | ${new Date(o.date).toLocaleDateString()}</div>
+                        <div style="font-weight:700;margin-top:0.2rem">${o.items.map(i => i.name).join(', ')}</div>
+                        <div style="font-size:0.85rem;margin-top:0.3rem">${o.customer} (${o.phone || '-'})</div>
+                        ${o.trackingNumber ? `<div style="font-size:0.8rem;margin-top:0.3rem;color:var(--primary)">송장번호: <strong>${o.trackingNumber}</strong></div>` : ''}
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-weight:800;color:${getStatusColor(o.status)}">${o.status}</div>
+                        <button class="btn" style="background:var(--glass);margin-top:0.5rem" onclick="issueInvoice('${o.id}', 'invoice')">청구서</button>
+                    </div>
+                </div>
+            `).join('') : '<p style="text-align:center;padding:2rem;color:var(--text-muted)">검색 결과가 없습니다.</p>';
+        }
+
+        async function renderAdmin(container) {
+            const orders = await store.getOrders();
+            const parts = await store.getParts();
+            const passwords = await store.getPasswords();
+            const sheetsUrl = await store.getSheetsUrl();
+
+            container.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+                    <h1>관리자 대시보드</h1>
+                    <div style="display:flex;gap:1rem">
+                        <button class="btn" style="background:var(--glass)" onclick="isAdminAuthenticated=false;renderView('shop')">로그아웃</button>
+                        <button class="btn btn-primary" onclick="showAddPartForm()"><i data-lucide="plus"></i> 부품 추가</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:3rem">
+                    <h2>주문 내역</h2>
+                    <div class="card" style="padding:0;overflow:hidden;margin-top:1rem">
+                        <table>
+                            <tr style="background:var(--glass)"><th>주문번호</th><th>업체/고객명</th><th>금액(물품)</th><th>비송비</th><th>총액</th><th>비밀번호</th><th>송장번호</th><th>상태</th><th>관리</th></tr>
+                            ${orders.map(o => {
+                                const itemsTotal = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+                                return `
+                                <tr>
+                                    <td>${o.id}</td>
+                                    <td>${o.customer}</td>
+                                    <td>₩${itemsTotal.toLocaleString()}</td>
+                                    <td>
+                                        <input type="number" id="shipping-input-${String(o.id).replace('#', '')}" value="${o.shippingFee || 0}" placeholder="배송비" style="width:80px;padding:0.4rem;background:var(--bg-color);color:white;border:1px solid var(--border);border-radius:4px;font-size:0.8rem">
+                                    </td>
+                                    <td style="font-weight:700; color:var(--primary)">₩${(o.total || itemsTotal).toLocaleString()}</td>
+                                    <td><span style="font-family:monospace; color:var(--accent)">${o.password || '-'}</span></td>
+                                    <td>
+                                        <input type="text" id="tracking-input-${String(o.id).replace('#', '')}" value="${o.trackingNumber || ''}" placeholder="송장번호" style="width:120px;padding:0.4rem;background:var(--bg-color);color:white;border:1px solid var(--border);border-radius:4px;font-size:0.8rem">
+                                    </td>
+                                    <td>
+                                        <span style="font-size:0.85rem; font-weight:700; color:var(--secondary); white-space:nowrap">${o.status}</span>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex;gap:0.5rem;align-items:center">
+                                            <select id="status-select-${String(o.id).replace('#', '')}" style="padding:0.4rem;background:var(--bg-color);color:white;border:1px solid var(--border);border-radius:4px">
+                                                <option value="신청" ${o.status === '신청' ? 'selected' : ''}>신청</option>
+                                                <option value="접수" ${o.status === '접수' ? 'selected' : ''}>접수</option>
+                                                <option value="준비중" ${o.status === '준비중' ? 'selected' : ''}>준비중</option>
+                                                <option value="발송" ${o.status === '발송' ? 'selected' : ''}>발송</option>
+                                                <option value="완료" ${o.status === '완료' ? 'selected' : ''}>완료</option>
+                                            </select>
+                                            <button class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.8rem" onclick="saveStatus('${o.id}')">저장</button>
+                                            <button class="btn" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:var(--secondary);color:white" onclick="issueInvoice('${o.id}', 'print')">출력</button>
+                                            <button class="btn" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:#ef4444;color:white" onclick="deleteOrderUI('${o.id}')">삭제</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `}).join('')}
+                        </table>
+                    </div>
+                    ${orders.length === 0 ? '<p style="text-align:center;padding:2rem;color:var(--text-muted)">주문 내역이 없습니다.</p>' : ''}
+                </div>
+
+                <div id="add-part-form" class="card" style="display:none;margin-bottom:2rem;border-color:var(--secondary)">
+                    <h3 id="form-title">새 부품 등록</h3>
+                    <input type="hidden" id="p-id">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+                        <div><label>기기구분 (여러 대는 쉼표로 구분)</label><input id="p-machine" placeholder="예: 공용, 보너스팡, 보네팡"></div>
+                        <div><label>부품명</label><input id="p-name"></div>
+                        <div><label>카테고리</label><input id="p-cat" placeholder="기계부속, 소모품 등"></div>
+                        <div><label>가격 (원)</label><input type="number" id="p-price"></div>
+                        <div>
+                            <label>부품 이미지 (파일 선택)</label>
+                            <div style="display:flex; gap:0.5rem; align-items:center">
+                                <input type="file" id="p-image-file" accept="image/*" onchange="handlePartImageUpload(this)" style="padding:0.4rem; font-size:0.8rem">
+                                <input type="hidden" id="p-img">
+                                <div id="p-img-preview" style="width:45px; height:45px; border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--glass); flex-shrink:0">
+                                    <i data-lucide="image" style="width:20px; color:var(--text-muted)"></i>
+                                </div>
+                                <button type="button" class="btn" onclick="removePartImage()" style="background:none; border:none; color:#ef4444; padding:0; cursor:pointer; display:flex; align-items:center" title="이미지 삭제">
+                                    <i data-lucide="x-circle" style="width:20px"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div><label>재고수량</label><input type="number" id="p-stock" value="0"></div>
+                    </div>
+                    <div style="margin-bottom:1rem"><label>상세설명</label><input id="p-desc"></div>
+                    <div style="display:flex;gap:1rem">
+                        <button class="btn btn-primary" onclick="saveNewPart()">저장하기</button>
+                        <button class="btn" style="background:var(--glass)" onclick="hideForm()">취소</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:3rem">
+                    <div style="display:flex; justify-content:flex-start; align-items:flex-end; gap:2rem; margin-bottom:1rem">
+                        <h2>현재 재고 목록</h2>
+                        <div style="display:flex; gap:0.8rem">
+                            <select id="admin-filter-machine" onchange="applyAdminFilters()" style="width:200px; padding:0.45rem; background:var(--card-bg); color:white; border:1px solid var(--border); border-radius:6px; font-size:0.85rem">
+                                <option value="전체">모든 기기</option>
+                                ${Array.from(new Set(parts.flatMap(p => (p.machine || "공용").split(',').map(m => m.trim())))).sort().map(m => `<option value="${m}">${m}</option>`).join('')}
+                            </select>
+                            <select id="admin-filter-category" onchange="applyAdminFilters()" style="width:200px; padding:0.45rem; background:var(--card-bg); color:white; border:1px solid var(--border); border-radius:6px; font-size:0.85rem">
+                                <option value="전체">모든 카테고리</option>
+                                ${Array.from(new Set(parts.map(p => p.category).filter(Boolean))).sort().map(c => `<option value="${c}">${c}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card" style="padding:0;overflow:hidden;background:rgba(255,255,255,0.02)">
+                        <table id="admin-parts-table">
+                            <tr style="background:var(--glass)"><th>기기</th><th>부품명</th><th>카테고리</th><th>가격</th><th>재고</th><th>관리</th></tr>
+                            <tbody id="admin-parts-tbody">
+                                ${parts.length ? [...parts].sort((a, b) => a.name.localeCompare(b.name, 'ko')).map(p => `
+                                    <tr>
+                                        <td>${p.machine || '공용'}</td>
+                                        <td style="font-weight:700">${p.name}</td>
+                                        <td>${p.category}</td>
+                                        <td>₩${p.price.toLocaleString()}</td>
+                                        <td>${p.stock || 0}</td>
+                                        <td>
+                                            <div style="display:flex;gap:0.5rem">
+                                                <button class="btn" style="background:var(--glass);padding:0.4rem" onclick="editPart(${p.id})"><i data-lucide="edit-2" style="width:16px"></i></button>
+                                                <button class="btn" style="background:none;border:none;color:#ef4444;padding:0.4rem;cursor:pointer" onclick="deletePartUI(${p.id})"><i data-lucide="trash-2" style="width:16px"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">등록된 부품이 없습니다.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem">
+                    <div class="card">
+                        <h2>보안 설정</h2>
+                        <h3 style="font-size:1rem;margin-bottom:1rem">비밀번호 관리 (${passwords.length}/10)</h3>
+                        <div id="password-list" style="margin-bottom:1.5rem">
+                            ${passwords.map((p, idx) => `
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+                                    <span style="font-family:monospace">****${p.slice(-2)}</span>
+                                    ${passwords.length > 1 ? `<button onclick="deletePassword(${idx})" style="background:none;border:none;color:#ef4444;cursor:pointer"><i data-lucide="trash-2" style="width:16px"></i></button>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${passwords.length < 10 ? `
+                            <div style="display:flex;gap:0.5rem">
+                                <input id="new-pw" type="password" placeholder="새 비밀번호" style="padding:0.5rem; flex:1">
+                                <button class="btn btn-primary" onclick="addNewPassword()" style="padding:0.5rem 1rem">추가</button>
+                            </div>
+                        ` : `<p style="color:var(--text-muted);font-size:0.8rem">최대 10개까지 설정 가능합니다.</p>`}
+                    </div>
+
+                    <div class="card">
+                        <h2>외부 연동</h2>
+                        <h3 style="font-size:1rem;margin-bottom:1rem">Google Sheets (주문 데이터 자동화)</h3>
+                        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Google Apps Script 웹 앱 URL을 입력하면 실시간으로 동기화됩니다.</p>
+                        <div style="margin-bottom:1rem">
+                            <input id="sheets-url" value="${sheetsUrl}" placeholder="https://script.google.com/..." style="padding:0.8rem;margin-bottom:0.5rem">
+                            <button class="btn btn-primary" style="width:100%" onclick="saveSheetsConfig()">연동 설정 저장</button>
+                        </div>
+                        <div style="border-top:1px solid var(--border);padding-top:1rem">
+                            <button class="btn" style="width:100%;background:var(--glass)" onclick="syncAllOrders()">기존 주문 전체 동기화 시도</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-color:var(--primary)">
+                        <h2 style="color:var(--primary)">데이터 관리 및 보관</h2>
+                        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.5rem">데이터를 안전하게 보존하거나, 오래된 내역을 정리하여 시스템을 쾌적하게 유지할 수 있습니다.</p>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <button class="btn" style="background:var(--glass); width:100%" onclick="downloadBackup()">
+                                <i data-lucide="download" style="width:16px; margin-right:0.4rem"></i> 전체 백업 다운로드
+                            </button>
+                            <button class="btn" style="background:var(--glass); width:100%; color:#ef4444" onclick="cleanupOldOrders()">
+                                <i data-lucide="trash-2" style="width:16px; margin-right:0.4rem"></i> 완료된 오래된 내역 정리
+                            </button>
+                        </div>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:1rem">* '정리' 기능은 30일이 지난 '완료' 상태의 주문만 골라 삭제합니다.</p>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        async function saveSheetsConfig() {
+            const url = document.getElementById('sheets-url').value;
+            await store.saveSheetsUrl(url);
+            alert('구글 연동 설정이 저장되었습니다.');
+        }
+
+        async function syncAllOrders() {
+            const url = await store.getSheetsUrl();
+            if (!url) return alert('연동 URL을 먼저 입력해 주세요.');
+            const orders = await store.getOrders();
+            if (confirm(`${orders.length}건의 데이터를 구글 시트로 보낼까요?`)) {
+                let successCount = 0;
+                for (const o of orders) {
+                    const success = await store.syncToSheet(o, url);
+                    if (success) successCount++;
+                }
+                alert(`전체 동기화 시도를 완료했습니다.\n(성공: ${successCount}건 / 전체: ${orders.length}건)\n\n※ 시트에 데이터가 보이지 않는다면 구글 앱 스크립트 배포 시 '액세스 권한: 모든 사용자(Anyone)' 설정을 확인해 주세요.`);
+            }
+        }
+
+        async function downloadBackup() {
+            try {
+                const parts = await store.getParts();
+                const orders = await store.getOrders();
+                const config = {
+                    passwords: await store.getPasswords(),
+                    sheetsUrl: await store.getSheetsUrl()
+                };
+
+                const backupData = {
+                    version: '1.0',
+                    timestamp: new Date().toISOString(),
+                    parts,
+                    orders,
+                    config
+                };
+
+                const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bongbong_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('전체 데이터 백업 파일이 다운로드되었습니다. 안전한 곳에 보관해 주세요.');
+            } catch (err) {
+                console.error('Backup error:', err);
+                alert('백업 생성 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function cleanupOldOrders() {
+            const orders = await store.getOrders();
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+
+            const toDelete = orders.filter(o => {
+                const oDate = new Date(o.date);
+                return o.status === '완료' && oDate < thirtyDaysAgo;
+            });
+
+            if (toDelete.length === 0) {
+                return alert('정리할 오래된 완료 내역이 없습니다. (30일 경과 및 완료 상태 기준)');
+            }
+
+            if (confirm(`30일이 지난 완료 건수 [${toDelete.length}건]을 정리하시겠습니까?\n이 작업은 취소할 수 없습니다. 필요시 먼저 백업을 받아주세요.`)) {
+                for (const o of toDelete) {
+                    await store.deleteOrder(o.id);
+                }
+                alert(`${toDelete.length}건의 오래된 내역이 정리되었습니다.`);
+                await renderView('admin');
+            }
+        }
+
+        async function addNewPassword() {
+            const newPw = document.getElementById('new-pw').value;
+            if (!newPw) return alert('비밀번호를 입력하세요.');
+            const pwds = await store.getPasswords();
+            if (pwds.length >= 10) return alert('최대 10개까지만 등록 가능합니다.');
+            pwds.push(newPw);
+            await store.savePasswords(pwds);
+            await renderView('admin');
+        }
+
+        async function deletePassword(idx) {
+            const pwds = await store.getPasswords();
+            if (pwds.length <= 1) return alert('최소 한 개의 비밀번호는 유지해야 합니다.');
+            if (confirm('정말 삭제하시겠습니까?')) {
+                pwds.splice(idx, 1);
+                await store.savePasswords(pwds);
+                await renderView('admin');
+            }
+        }
+
+        async function saveStatus(id) {
+            console.log('saveStatus called for ID:', id);
+            const safeId = String(id).replace('#', '');
+            const selectId = `status-select-${safeId}`;
+            const trackingId = `tracking-input-${safeId}`;
+            const shippingId = `shipping-input-${safeId}`;
+            
+            const selectEl = document.getElementById(selectId);
+            const trackingEl = document.getElementById(trackingId);
+            const shippingEl = document.getElementById(shippingId);
+
+            if (!selectEl) {
+                console.error('Select element not found by ID:', selectId);
+                alert('해당 주문의 상태 변경 요소를 찾을 수 없습니다.');
+                return;
+            }
+
+            const status = selectEl.value;
+            const trackingNumber = trackingEl ? trackingEl.value : null;
+            const shippingFee = shippingEl ? parseInt(shippingEl.value) : 0;
+            
+            console.log('Selected status:', status, 'Tracking:', trackingNumber, 'Shipping:', shippingFee);
+            await store.updateStatus(id, status, trackingNumber, shippingFee);
+            alert('주문 정보가 업데이트되었습니다.');
+            await renderView('admin');
+        }
+
+        function showAddPartForm() {
+            const el = document.getElementById('add-part-form');
+            if (el) el.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function handlePartImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const originalBase64 = e.target.result;
+                    const compressedBase64 = await compressImage(originalBase64);
+                    document.getElementById('p-img').value = compressedBase64;
+                    document.getElementById('p-img-preview').innerHTML = `<img src="${compressedBase64}" style="width:100%; height:100%; object-fit:cover">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function compressImage(base64, maxWidth = 600) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = base64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxWidth) {
+                            width *= maxWidth / height;
+                            height = maxWidth;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.onerror = () => resolve(base64);
+            });
+        }
+
+        function removePartImage() {
+            const imgInput = document.getElementById('p-img');
+            const fileInput = document.getElementById('p-image-file');
+            const preview = document.getElementById('p-img-preview');
+            if (imgInput) imgInput.value = '';
+            if (fileInput) fileInput.value = '';
+            if (preview) {
+                preview.innerHTML = `<i data-lucide="image" style="width:20px; color:var(--text-muted)"></i>`;
+                lucide.createIcons();
+            }
+        }
+
+        async function applyAdminFilters() {
+            const machineFilter = document.getElementById('admin-filter-machine').value;
+            const categoryFilter = document.getElementById('admin-filter-category').value;
+            let filteredParts = await store.getParts();
+            if (machineFilter !== "전체") {
+                filteredParts = filteredParts.filter(p => (p.machine || "공용").split(',').map(m => m.trim()).includes(machineFilter) || (p.machine || "공용") === "공용");
+            }
+            if (categoryFilter !== "전체") {
+                filteredParts = filteredParts.filter(p => p.category === categoryFilter);
+            }
+            const tbody = document.getElementById('admin-parts-tbody');
+            if (tbody) {
+                tbody.innerHTML = filteredParts.length ? filteredParts.sort((a, b) => a.name.localeCompare(b.name, 'ko')).map(p => `
+                    <tr>
+                        <td>${p.machine || '공용'}</td>
+                        <td style="font-weight:700">${p.name}</td>
+                        <td>${p.category}</td>
+                        <td>₩${p.price.toLocaleString()}</td>
+                        <td>${p.stock || 0}</td>
+                        <td>
+                            <div style="display:flex;gap:0.5rem">
+                                <button class="btn" style="background:var(--glass);padding:0.4rem" onclick="editPart(${p.id})"><i data-lucide="edit-2" style="width:16px"></i></button>
+                                <button class="btn" style="background:none;border:none;color:#ef4444;padding:0.4rem;cursor:pointer" onclick="deletePartUI(${p.id})"><i data-lucide="trash-2" style="width:16px"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">일치하는 부품이 없습니다.</td></tr>';
+                lucide.createIcons();
+            }
+        }
+
+        async function saveNewPart() {
+            const id = document.getElementById('p-id').value;
+            const part = {
+                machine: document.getElementById('p-machine').value || "공용",
+                name: document.getElementById('p-name').value,
+                category: document.getElementById('p-cat').value,
+                price: parseInt(document.getElementById('p-price').value),
+                img: document.getElementById('p-img').value || "",
+                desc: document.getElementById('p-desc').value,
+                stock: parseInt(document.getElementById('p-stock').value) || 0
+            };
+            if (!part.name || isNaN(part.price)) return alert('이름과 가격은 필수입니다.');
+            if (id) {
+                await store.updatePart(id, part);
+                alert('부품 정보가 수정되었습니다.');
+            } else {
+                await store.addPart(part);
+                alert('부품이 성공적으로 추가되었습니다.');
+            }
+            hideForm();
+            await renderView('admin');
+        }
+
+        async function editPart(id) {
+            const parts = await store.getParts();
+            const p = parts.find(x => x.id === parseInt(id));
+            if (!p) return;
+            document.getElementById('add-part-form').style.display = 'block';
+            document.getElementById('form-title').innerText = '부품 정보 수정';
+            document.getElementById('p-id').value = p.id;
+            document.getElementById('p-machine').value = p.machine || "공용";
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-cat').value = p.category;
+            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-img').value = p.img || "";
+            if (p.img) {
+                document.getElementById('p-img-preview').innerHTML = `<img src="${p.img}" style="width:100%; height:100%; object-fit:cover">`;
+            } else {
+                document.getElementById('p-img-preview').innerHTML = `<i data-lucide="image" style="width:20px; color:var(--text-muted)"></i>`;
+                lucide.createIcons();
+            }
+            document.getElementById('p-desc').value = p.desc;
+            document.getElementById('p-stock').value = p.stock || 0;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deletePartUI(id) {
+            if (confirm('정말 이 부품을 삭제하시겠습니까? 관련 데이터가 모두 삭제됩니다.')) {
+                await store.deletePart(id);
+                await renderView('admin');
+            }
+        }
+
+        async function deleteOrderUI(id) {
+            if (confirm(`주문번호 [${id}] 내역을 정말 삭제하시겠습니까?`)) {
+                await store.deleteOrder(id);
+                alert('주문 내역이 삭제되었습니다.');
+                await renderView('admin');
+            }
+        }
+
+        function hideForm() {
+            const form = document.getElementById('add-part-form');
+            if (!form) return;
+            form.style.display = 'none';
+            document.getElementById('p-id').value = '';
+            document.getElementById('form-title').innerText = '새 부품 등록';
+            ['p-machine', 'p-name', 'p-cat', 'p-price', 'p-desc', 'p-img', 'p-image-file'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            document.getElementById('p-img-preview').innerHTML = `<i data-lucide="image" style="width:20px; color:var(--text-muted)"></i>`;
+            document.getElementById('p-stock').value = 0;
+            lucide.createIcons();
+        }
+
+        async function issueInvoice(id, type = 'invoice') {
+            try {
+                const orders = await store.getOrders();
+                const o = orders.find(x => x.id === id);
+                if (!o) return alert('주문 정보를 찾을 수 없습니다.');
+                const win = window.open('', '_blank');
+                const now = new Date();
+                const dateStr = now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0');
+
+                const title = type === 'invoice' ? '청 구 서' : '발 주 서';
+
+                let rowsHtml = '';
+                o.items.forEach((i, idx) => {
+                    rowsHtml += `<tr><td class="text-center">${idx + 1}</td><td>${i.name}</td><td class="text-center">${i.qty}</td><td class="text-right">₩${(i.price * i.qty).toLocaleString()}</td><td></td></tr>`;
+                });
+
+                const html = `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>${title} - ${o.id}</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            -webkit-print-color-adjust: exact;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .paper {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin-bottom: 30px;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+            color: #000;
+        }
+        .title {
+            text-align: center;
+            font-size: 32pt;
+            font-weight: 800;
+            letter-spacing: 15px;
+            margin-bottom: 40px;
+            padding-bottom: 10px;
+            border-bottom: 4px double #000;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .customer-info {
+            width: 50%;
+        }
+        .supplier-info {
+            width: 45%;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        .info-table th, .info-table td {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            height: 24px;
+        }
+        .info-table th {
+            background-color: #f2f2f2;
+            width: 80px;
+            text-align: center;
+        }
+        .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .main-table th, .main-table td {
+            border: 1px solid #000;
+            padding: 10px;
+            font-size: 11pt;
+        }
+        .main-table th {
+            background-color: #f2f2f2;
+            height: 35px;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .summary-section {
+            margin-top: 20px;
+            border: 2px solid #000;
+            padding: 15px;
+            text-align: right;
+            font-size: 16pt;
+            font-weight: 800;
+        }
+        .footer-note {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+        .no-print {
+            position: sticky;
+            top: 0;
+            width: 210mm;
+            text-align: right;
+            padding: 10px;
+            z-index: 100;
+        }
+        .print-btn {
+            background: #e91e63;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
+            font-size: 11pt;
+        }
+        @media print {
+            body { background: none; }
+            .container { padding: 0; }
+            .no-print { display: none; }
+            .paper {
+                margin: 0;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="no-print">
+            <button class="print-btn" onclick="window.print()">🖨️ PDF 저장 / 인쇄하기</button>
+        </div>
+        <div class="paper">
+            <div class="title">${title}</div>
+            
+            <div class="header-section">
+                <div class="customer-info">
+                    <p style="font-size: 14pt; margin-bottom: 15px;"><strong>귀하: ${o.branch} (${o.manager} 님)</strong></p>
+                    <table class="info-table">
+                        <tr><th>주문번호</th><td>${o.id}</td></tr>
+                        <tr><th>송장번호</th><td style="color:#e91e63; font-weight:bold;">${o.trackingNumber || '발송 준비 중'}</td></tr>
+                        <tr><th>신청일자</th><td>${new Date(o.date).toLocaleDateString()}</td></tr>
+                        <tr><th>발행일자</th><td>${dateStr}</td></tr>
+                        <tr><th>전화번호</th><td>${o.phone}</td></tr>
+                        <tr><th>배송지</th><td style="font-size: 9pt;">${o.address}</td></tr>
+                    </table>
+                </div>
+                <div class="supplier-info">
+                    <table class="info-table">
+                        <tr><th rowspan="7" style="width: 25px;">공<br>급<br>자</th><th>사업자번호</th><td>473-81-03000</td></tr>
+                        <tr><th>상호명</th><td>(주)씨에스어뮤즈먼트</td></tr>
+                        <tr><th>대표자</th><td>박천수</td></tr>
+                        <tr><th>주소</th><td style="font-size: 8pt;">경남 양산시 유산마을길 4(어곡동)</td></tr>
+                        <tr><th>전화</th><td>1522-1413</td></tr>
+                        <tr><th>입금계좌</th><td style="font-size: 8.5pt;">우리은행 1005-204-566689</td></tr>
+                        <tr><th>이메일</th><td style="font-size: 9pt;">csamuse1@gmail.com</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">No.</th>
+                        <th style="width: 47%;">품명 및 규격</th>
+                        <th style="width: 10%;">수량</th>
+                        <th style="width: 15%;">단가</th>
+                        <th style="width: 20%;">금액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${o.items.map((item, idx) => `
+                        <tr>
+                            <td class="text-center">${idx + 1}</td>
+                            <td>${item.name}</td>
+                            <td class="text-center">${item.qty}</td>
+                            <td class="text-right">${item.price.toLocaleString()}</td>
+                            <td class="text-right">${(item.price * item.qty).toLocaleString()}</td>
+                        </tr>
+                    `).join('')}
+                    ${o.shippingFee ? `
+                        <tr>
+                            <td class="text-center">${o.items.length + 1}</td>
+                            <td>택배비 (배송료)</td>
+                            <td class="text-center">1</td>
+                            <td class="text-right">${o.shippingFee.toLocaleString()}</td>
+                            <td class="text-right">${o.shippingFee.toLocaleString()}</td>
+                        </tr>
+                    ` : ''}
+                    <!-- Empty rows to fill the space -->
+                    ${Array(Math.max(0, 5 - o.items.length - (o.shippingFee ? 1 : 0))).fill(0).map(() => `
+                        <tr><td style="height: 32px;"></td><td></td><td></td><td></td><td></td></tr>
+                    `).join('')}
+                </tbody>
+            </table>
+
+            <div class="summary-section">
+                총 합계 금액(VAT 포함): ₩${o.total.toLocaleString()}
+            </div>
+
+            <div class="footer-note" style="margin-top: 60px;">
+                위 금액을 정히 ${type === 'invoice' ? '청구' : '영수/확인'}합니다.
+            </div>
+            
+            <div style="position: absolute; bottom: 30mm; width: calc(100% - 40mm); text-align: center; color: #777; font-size: 9pt; border-top: 1px solid #ddd; padding-top: 10px;">
+                본 문서는 전자적으로 발행되었으며, 실물 인감 생략이 가능합니다.
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+                win.document.write(html);
+                win.document.close();
+            } catch (err) {
+                console.error(err);
+                alert('주문서 생성 중 오류 발생');
+            }
+        }
+
+        async function printOrder(id) {
+            try {
+                const orders = await store.getOrders();
+                const o = orders.find(x => x.id === id);
+                if (!o) return;
+                const now = new Date();
+                const days = ['일', '월', '화', '수', '목', '금', '토'];
+                const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}.(${days[now.getDay()]})`;
+                const win = window.open('', '_blank');
+                let itemsText = o.items.map(i => `${i.name} - ${i.qty}개`).join('\n');
+                const html = `<html><head><title>발주서 - ${o.branch}</title><style>body { font-family: 'Malgun Gothic', sans-serif; padding: 20mm; white-space: pre-wrap; font-size: 15pt; }</style></head><body>${dateStr}\n\n${o.branch || ''}\n${o.address || ''}\n${o.phone || ''}\n\n${itemsText}</body></html>`;
+                win.document.write(html);
+                win.document.close();
+                win.print();
+            } catch (err) { alert('인쇄 오류 발생'); }
+        }
+
+        // Global exports
+        window.renderView = renderView;
+        window.addToCart = addToCart;
+        window.renderCheckout = renderCheckout;
+        window.submitOrder = submitOrder;
+        window.saveStatus = saveStatus;
+        window.issueInvoice = issueInvoice;
+        window.removeFromCart = removeFromCart;
+        window.printOrder = printOrder;
+        window.checkAdminAuth = checkAdminAuth;
+        window.addNewPassword = addNewPassword;
+        window.deletePassword = deletePassword;
+        window.saveSheetsConfig = saveSheetsConfig;
+        window.syncAllOrders = syncAllOrders;
+        window.downloadBackup = downloadBackup;
+        window.cleanupOldOrders = cleanupOldOrders;
+        window.editPart = editPart;
+        window.deletePartUI = deletePartUI;
+        window.deleteOrderUI = deleteOrderUI;
+        window.hideForm = hideForm;
+        window.saveNewPart = saveNewPart;
+        window.showAddPartForm = showAddPartForm;
+        window.applyAdminFilters = applyAdminFilters;
+        window.handlePartImageUpload = handlePartImageUpload;
+        window.removePartImage = removePartImage;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await store.init();
+            await renderView('shop');
+        });
+    </script>
+</body>
+
+</html>
