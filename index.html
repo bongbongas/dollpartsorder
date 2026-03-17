@@ -377,7 +377,7 @@
 <body>
     <div class="app-container">
         <nav>
-            <div class="logo">BONGBONG PARTS Order</div>
+            <div class="logo">BONGBONG PARTS Order <span style="font-size:0.5em;color:var(--text-muted);vertical-align:middle;margin-left:5px">v1.1</span></div>
             <div class="nav-links">
                 <a onclick="renderView('shop')" id="nav-shop" class="active">부품주문</a>
                 <a onclick="renderView('tracking')" id="nav-tracking">주문조회</a>
@@ -1151,7 +1151,11 @@
                             <button class="btn" style="background:var(--glass); width:100%" onclick="downloadBackup()">
                                 <i data-lucide="download" style="width:16px; margin-right:0.4rem"></i> 전체 백업 다운로드
                             </button>
-                            <button class="btn" style="background:var(--glass); width:100%; color:#ef4444" onclick="cleanupOldOrders()">
+                            <button class="btn" style="background:var(--glass); width:100%" onclick="document.getElementById('import-file').click()">
+                                <i data-lucide="upload" style="width:16px; margin-right:0.4rem"></i> 백업 파일 불러오기
+                                <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(this)">
+                            </button>
+                            <button class="btn" style="background:var(--glass); width:100%; color:#ef4444; grid-column:1/-1" onclick="cleanupOldOrders()">
                                 <i data-lucide="trash-2" style="width:16px; margin-right:0.4rem"></i> 완료된 오래된 내역 정리
                             </button>
                         </div>
@@ -1213,6 +1217,36 @@
                 console.error('Backup error:', err);
                 alert('백업 생성 중 오류가 발생했습니다.');
             }
+        }
+
+        function importBackup(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.version || !data.parts || !data.orders) throw new Error('올바르지 않은 백업 파일 형식입니다.');
+                    
+                    if (confirm('선택하신 백업 파일 데이터로 현재 시스템을 덮어씁니다. 진행하시겠습니까?')) {
+                        await db.clear('parts');
+                        await db.clear('orders');
+                        for (const p of data.parts) await db.put('parts', p);
+                        for (const o of data.orders) await db.put('orders', o);
+                        if (data.config) {
+                            if (data.config.passwords) await store.savePasswords(data.config.passwords);
+                            if (data.config.sheetsUrl) await store.saveSheetsUrl(data.config.sheetsUrl);
+                        }
+                        alert('백업 데이터 복원(동기화)이 완료되었습니다!');
+                        await renderView('admin');
+                    }
+                } catch (err) {
+                    console.error('Import error:', err);
+                    alert('파일을 불러오는 중 오류가 발생했습니다: ' + err.message);
+                }
+                input.value = ''; // Reset input
+            };
+            reader.readAsText(file);
         }
 
         async function cleanupOldOrders() {
@@ -1725,6 +1759,7 @@
         window.saveSheetsConfig = saveSheetsConfig;
         window.syncAllOrders = syncAllOrders;
         window.downloadBackup = downloadBackup;
+        window.importBackup = importBackup;
         window.cleanupOldOrders = cleanupOldOrders;
         window.editPart = editPart;
         window.deletePartUI = deletePartUI;
